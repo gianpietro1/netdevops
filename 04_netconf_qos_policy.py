@@ -57,6 +57,7 @@ for host in hosts:
     response = m.edit_config(target='candidate', config=config)
 
     # Commit the configuration
-    m.commit()
+    commit = m.commit()
+    print(commit)
     m.close_session()
 
