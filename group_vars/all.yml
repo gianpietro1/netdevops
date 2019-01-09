@@ -3,7 +3,7 @@ ansible_network_os: iosxr
 ansible_ssh_pass: ws
 ansible_user: ws
 
-vrf: "CLIENTE1"
+vrf: "CLIENTE2"
 route_target: "1:1"
-bgp_as: "65000"
+bgp_as: "65001"
 rd: "1:1"
