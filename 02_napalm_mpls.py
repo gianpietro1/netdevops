@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # Import the required libraries
 from napalm import get_network_driver
 import jinja2
@@ -11,7 +13,7 @@ driver = get_network_driver('iosxr')
 # nuestra plantilla desde el sistema de archivos local
 templateLoader = jinja2.FileSystemLoader(searchpath="./")
 templateEnv = jinja2.Environment(loader=templateLoader)
-template = templateEnv.get_template(str(”nombre_del_archivo”))
+template = templateEnv.get_template(str("jinja2-napalm.j2"))
 
 # Las variables pueden venir desde un archivo, 
 # por ahora definámoslas aquí mismo
@@ -46,8 +48,8 @@ R4conf = template.render(IP_LO0=R4_LO0,IP_GE0=R4_GE0,IP_GE1=R4_GE1,IP_GE2=R4_GE2
 hosts = [ 
    {'name':'R1','ip': '192.168.0.1', 'config': R1conf},
    {'name':'R2','ip': '192.168.0.2', 'config': R2conf},
-   {'name':'R2','ip': '192.168.0.3', 'config': R3conf},
-   {'name':'R2','ip': '192.168.0.4', 'config': R4conf},
+   {'name':'R3','ip': '192.168.0.3', 'config': R3conf},
+   {'name':'R4','ip': '192.168.0.4', 'config': R4conf},
 ]
 
 for host in hosts:
@@ -55,7 +57,7 @@ for host in hosts:
     device = driver(hostname=host['ip'],
                     username='ws',
                     password='ws',
-                    optional_args={'port': host['port']})
+                   )
     device.open()
 
     print('Cargando configuración en el equipo %s' % host['name'])
@@ -66,6 +68,8 @@ for host in hosts:
     if config_changes:
         print('Cambios a aplicar...')
         print(config_changes)
+        print('Aplicando cambios...')
+        device.commit_config()
     else:
         print('No hay cambios a aplicar')
     device.close()
