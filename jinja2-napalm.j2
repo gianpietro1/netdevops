@@ -1,0 +1,69 @@
+interface Loopback0
+ ipv4 address {{ IP_LO0 }} 255.255.255.255
+!
+interface GigabitEthernet0/0/0/0
+ ipv4 address {{ IP_GE0 }} 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet0/0/0/1
+ ipv4 address {{ IP_GE1 }} 255.255.255.252
+ no shutdown
+!
+{% if IP_GE2 %}
+interface GigabitEthernet0/0/0/2
+ ipv4 address {{ IP_GE2 }} 255.255.255.252
+ no shutdown
+{% endif %}
+!
+router ospf BACKBONE
+ area 0
+  interface Loopback0
+  !
+  interface GigabitEthernet0/0/0/0
+  !
+  interface GigabitEthernet0/0/0/1
+  !
+{% if IP_GE2 %}
+  interface GigabitEthernet0/0/0/2
+  !  
+{% endif %}
+!
+mpls ldp
+ interface GigabitEthernet0/0/0/0
+ !
+ interface GigabitEthernet0/0/0/1
+ !
+{% if IP_GE2 %}
+ interface GigabitEthernet0/0/0/2
+ !
+{% endif %}
+
+router bgp 65000
+  address-family vpnv4 unicast
+  !
+{% if RR %}
+ neighbor-group CLIENTS
+  remote-as 65000
+  update-source Loopback0
+  address-family vpnv4 unicast
+   no route-reflector-client inheritance-disable
+   route-reflector-client
+  !
+ !
+ neighbor 2.2.2.2
+  use neighbor-group CLIENTS
+ !
+ neighbor 3.3.3.3
+  use neighbor-group CLIENTS
+ !
+ neighbor 4.4.4.4
+  use neighbor-group CLIENTS
+ !    
+
+{% else %}
+ neighbor 1.1.1.1
+  remote-as 65000
+  update-source Loopback0
+  address-family vpnv4 unicast
+  !
+{% endif %}

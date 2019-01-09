@@ -24,4 +24,4 @@ for host in ip_list:
   if change_mtu_list:
     change_mtu_list.append('commit')
     output = net_connect.send_config_set(change_mtu_list)
-    print(output)1
+    print(output)
