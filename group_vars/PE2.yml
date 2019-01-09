@@ -1,0 +1,2 @@
+interface_pe: "GigabitEthernet0/0/0/6"
+ip_pe: "172.16.2.1/30"

@@ -4,65 +4,50 @@
   - name: Configurando VRF
     iosxr_config:
       lines:
-      - vrf CLIENTE1
+      - vrf {{vrf}}
   - name: Habilitando Address-Family en VRF
     iosxr_config:
       lines:
       - address-family ipv4 unicast
-      parents: vrf CLIENTE1
+      parents: vrf {{vrf}}
   - name: Configurando Route-targets en VRF
     iosxr_config:
       lines:
-      - import route-target 1:1
-      - export route-target 1:1
+      - import route-target {{route_target}}
+      - export route-target {{route_target}}
       parents:
-      - vrf CLIENTE1
+      - vrf {{vrf}}
       - address-family ipv4 unicast
 
 - hosts: PE
   gather_facts: False
   tasks:
-  - name: Habilitando BGP
+  - name: Habilitando VRF en BGP
     iosxr_config:
       lines:
-      -  vrf CLIENTE1
+      -  vrf {{vrf}}
       parents:
-      - router bgp 65000
+      - router bgp {{bgp_as}}
   - name: Habilitando RD & Address-Family
     iosxr_config:
       lines:
-      - rd 1:1
+      - rd {{rd}}
       - address-family ipv4 unicast
       parents:
-      - router bgp 65000
-      - vrf CLIENTE1
+      - router bgp {{bgp_as}}
+      - vrf {{vrf}}
   - name: Redistribuyendo rutas
     iosxr_config:
       lines:
       - redistribute connected
       parents:
-      - router bgp 65000
-      - vrf CLIENTE1
+      - router bgp {{bgp_as}}
+      - vrf {{vrf}}
       - address-family ipv4 unicast
-
-- hosts: PE1
-  gather_facts: False
-  tasks:
   - name: Habilitando interfaz y direccionamiento para L3VPN
     iosxr_config:
       lines:
       - no shutdown
-      - ipv4 address 172.16.1.1/30
-      - vrf CLIENTE1
-      parents: interface GigabitEthernet0/0/0/6
-
-- hosts: PE2
-  gather_facts: False
-  tasks:
-  - name: Habilitando interfaz y direccionamiento para L3VPN
-    iosxr_config:
-      lines:
-      - no shutdown
-      - ipv4 address 172.16.2.1/30
-      - vrf CLIENTE1
-      parents: interface GigabitEthernet0/0/0/6
+      - ipv4 address {{ip_pe}}
+      - vrf {{vrf}}
+      parents: interface {{interface_pe}}
